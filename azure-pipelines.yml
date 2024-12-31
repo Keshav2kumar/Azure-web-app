@@ -8,7 +8,7 @@ pool:
 
 variables:
   imageName: 'kk2467/python'  # Use your Docker Hub or ACR image name.
-  dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)  # Replace with your Docker registry connection name.
+  dockerRegistryServiceConnection: 'kk2467'  # Replace with your Docker registry connection name.
 
 stages:
   - stage: Build
