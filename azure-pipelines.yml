@@ -50,6 +50,6 @@ stages:
               appName: 'Demo2711'  # Name of the Azure App Service
               resourceGroupName: 'DefaultResourceGroup-CCAN'  # Resource group name
               slotName: 'production'  # Deployment slot name
-              containerRegistry: 'https://hub.docker.com/repositories/kk2467'  # Container registry URL (Docker Hub)
-              imageName: 'mydockerusername/my-app:latest'  # Full Docker image name
+              containerRegistry: 'kk2467'  # Container registry URL (Docker Hub)
+              imageName: 'kk2467/python'  # Full Docker image name
               isPush: true  # Push the Docker image to Azure App Service
