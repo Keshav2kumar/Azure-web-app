@@ -23,17 +23,17 @@ stages:
           - task: Docker@2
             displayName: 'Build Docker Image'
             inputs:
-              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry connection
-              repository: $(imageName)
+              containerRegistry: $(kk2467)  # Docker registry connection
+              repository: $(kk2467/python)
               command: 'build'
-              Dockerfile: $(Build.SourcesDirectory)/Dockerfile
+              Dockerfile: $(C:\Users\hp\Azure-web-app\Azure-web-app\Azure-web-app)/Dockerfile
               tags: 'latest'
 
           - task: Docker@2
             displayName: 'Push Docker Image'
             inputs:
-              containerRegistry: $(dockerRegistryServiceConnection)
-              repository: $(imageName)
+              containerRegistry: $(kk2467)
+              repository: $(kk2467/python)
               command: 'push'
               tags: 'latest'
 
@@ -51,5 +51,5 @@ stages:
               resourceGroupName: 'DefaultResourceGroup-CCAN'  # Resource group name
               slotName: 'production'  # Deployment slot name
               containerRegistry: 'docker.io'  # Container registry URL (Docker Hub)
-              imageName: 'docker.io/python:3.13'  # Full Docker image name
+              imageName: 'kk2467/python'  # Full Docker image name
               isPush: true  # Push the Docker image to Azure App Service
