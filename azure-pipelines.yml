@@ -7,8 +7,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  imageName: 'kk2467/python'  # Use your Docker Hub or ACR image name.
-  dockerRegistryServiceConnection: 'kk2467'  # Replace with your Docker registry connection name.
+  imageName: 'kk2467/python'  # Docker image repository name
+  dockerRegistryServiceConnection: 'kk2467'  # Docker registry service connection
+  azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure subscription service connection
+  appName: 'Demo2711'  # Azure App Service name
+  resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group name
+  slotName: 'production'  # Azure App Service slot name
 
 stages:
   - stage: Build
@@ -20,22 +24,20 @@ stages:
           - task: Checkout@1  # Checkout task with version 1
             displayName: 'Checkout Code'
 
-          # Build Docker Image
           - task: Docker@2
             displayName: 'Build Docker Image'
             inputs:
-              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry service connection
-              repository: $(imageName)  # Image repository name
+              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry connection
+              repository: $(imageName)  # Docker image repository
               command: 'build'
-              Dockerfile: $(Build.SourcesDirectory)/Dockerfile  # Path to the Dockerfile
+              Dockerfile: $(Build.SourcesDirectory)/Dockerfile  # Path to the Dockerfile in your repository
               tags: 'latest'
 
-          # Push Docker Image
           - task: Docker@2
             displayName: 'Push Docker Image'
             inputs:
-              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry service connection
-              repository: $(imageName)  # Image repository name
+              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry connection
+              repository: $(imageName)  # Docker image repository
               command: 'push'
               tags: 'latest'
 
@@ -45,14 +47,13 @@ stages:
       - job: Deploy
         displayName: 'Deploy Docker Container to Azure App Service'
         steps:
-          # Deploy Docker Container to Azure App Service
           - task: AzureWebAppContainer@1  # Use version 2 instead of version 1
             displayName: 'Deploy Docker Image to Azure'
             inputs:
-              azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure subscription service connection
-              appName: 'Demo2711'  # Name of the Azure App Service
-              resourceGroupName: 'DefaultResourceGroup-CCAN'  # Resource group name
-              slotName: 'production'  # Deployment slot name
+              azureSubscription: $(azureSubscription)  # Azure service connection
+              appName: $(appName)  # Azure App Service name
+              resourceGroupName: $(resourceGroup)  # Resource group name
+              slotName: $(slotName)  # Azure slot name
               containerRegistry: 'docker.io'  # Docker Hub registry
-              imageName: $(imageName):latest  # Full Docker image name
+              imageName: $(imageName):latest  # Docker image name
               isPush: true  # Push the Docker image to Azure App Service
