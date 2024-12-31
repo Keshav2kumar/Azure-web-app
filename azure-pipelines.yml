@@ -7,7 +7,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  imageName: 'python:3.13'
+  imageName: 'mydockerusername/my-app'  # Use your Docker Hub or ACR image name.
   dockerRegistryServiceConnection: 'kk2467'  # Replace with your Docker registry connection name.
 
 stages:
@@ -17,13 +17,13 @@ stages:
       - job: Build
         displayName: 'Build Docker Image'
         steps:
-          - task: Checkout@2
+          - task: Checkout@1  # Checkout task with version 1
             displayName: 'Checkout Code'
 
           - task: Docker@2
             displayName: 'Build Docker Image'
             inputs:
-              containerRegistry: $(dockerRegistryServiceConnection)  # Service connection to Docker registry (e.g., Docker Hub or Azure Container Registry).
+              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry connection
               repository: $(imageName)
               command: 'build'
               Dockerfile: $(Build.SourcesDirectory)/Dockerfile
@@ -43,12 +43,12 @@ stages:
       - job: Deploy
         displayName: 'Deploy Docker Container to Azure App Service'
         steps:
-          - task: AzureWebAppContainer@2
-            displayName: 'Deploy Docker Image'
+          - task: AzureWebAppContainer@1  # Use version 2 instead of version 1
+            displayName: 'Deploy Docker Image to Azure'
             inputs:
-              azureSubscription: 'Free Trial'  # Your Azure subscription name.
-              appName: 'Demo2711'  # Name of the Azure App Service where the Docker container will be deployed.
-              containerRegistry: 'kk2467'  # Docker Hub registry, or use your Azure Container Registry.
-              imageName: $(python:3.13):latest
-              isPush: true
-              webAppKind: 'appServiceLinux'  # Deploy to Linux Web App with Docker.
+              azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Your Azure subscription
+              appName: 'Demo2711'  # Your Azure App Service name
+              resourceGroupName: 'DefaultResourceGroup-CCAN'  # Resource group
+              slotName: 'production'  # Deployment slot (if any)
+              imageName: 'kk2467/python 3.13:latest'  # Full image name (including registry if needed)
+              isPush: true  # Set to true if you're pushing the image to Azure App Service
