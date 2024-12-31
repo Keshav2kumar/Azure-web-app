@@ -1,0 +1,54 @@
+trigger:
+  branches:
+    include:
+      - main  # Trigger the pipeline when there are changes to the main branch.
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'python:3.13'
+  dockerRegistryServiceConnection: 'kk2467'  # Replace with your Docker registry connection name.
+
+stages:
+  - stage: Build
+    displayName: 'Build and Dockerize'
+    jobs:
+      - job: Build
+        displayName: 'Build Docker Image'
+        steps:
+          - task: Checkout@2
+            displayName: 'Checkout Code'
+
+          - task: Docker@2
+            displayName: 'Build Docker Image'
+            inputs:
+              containerRegistry: $(dockerRegistryServiceConnection)  # Service connection to Docker registry (e.g., Docker Hub or Azure Container Registry).
+              repository: $(imageName)
+              command: 'build'
+              Dockerfile: $(Build.SourcesDirectory)/Dockerfile
+              tags: 'latest'
+
+          - task: Docker@2
+            displayName: 'Push Docker Image'
+            inputs:
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: $(imageName)
+              command: 'push'
+              tags: 'latest'
+
+  - stage: Deploy
+    displayName: 'Deploy to Azure App Service'
+    jobs:
+      - job: Deploy
+        displayName: 'Deploy Docker Container to Azure App Service'
+        steps:
+          - task: AzureWebAppContainer@2
+            displayName: 'Deploy Docker Image'
+            inputs:
+              azureSubscription: 'Free Trial'  # Your Azure subscription name.
+              appName: 'Demo2711'  # Name of the Azure App Service where the Docker container will be deployed.
+              containerRegistry: 'kk2467'  # Docker Hub registry, or use your Azure Container Registry.
+              imageName: $(python:3.13):latest
+              isPush: true
+              webAppKind: 'appServiceLinux'  # Deploy to Linux Web App with Docker.
