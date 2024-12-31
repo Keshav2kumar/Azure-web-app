@@ -20,20 +20,22 @@ stages:
           - task: Checkout@1  # Checkout task with version 1
             displayName: 'Checkout Code'
 
+          # Build Docker Image
           - task: Docker@2
             displayName: 'Build Docker Image'
             inputs:
-              containerRegistry: 'kk2467'  # Docker registry connection
-              repository: $(kk2467/python)
+              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry service connection
+              repository: $(imageName)  # Image repository name
               command: 'build'
-              Dockerfile: $(C:\Users\hp\Azure-web-app\Azure-web-app\Azure-web-app)/Dockerfile
+              Dockerfile: $(Build.SourcesDirectory)/Dockerfile  # Path to the Dockerfile
               tags: 'latest'
 
+          # Push Docker Image
           - task: Docker@2
             displayName: 'Push Docker Image'
             inputs:
-              containerRegistry: 'kk2467'
-              repository: $(kk2467/python)
+              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry service connection
+              repository: $(imageName)  # Image repository name
               command: 'push'
               tags: 'latest'
 
@@ -43,6 +45,7 @@ stages:
       - job: Deploy
         displayName: 'Deploy Docker Container to Azure App Service'
         steps:
+          # Deploy Docker Container to Azure App Service
           - task: AzureWebAppContainer@1  # Use version 2 instead of version 1
             displayName: 'Deploy Docker Image to Azure'
             inputs:
@@ -50,6 +53,6 @@ stages:
               appName: 'Demo2711'  # Name of the Azure App Service
               resourceGroupName: 'DefaultResourceGroup-CCAN'  # Resource group name
               slotName: 'production'  # Deployment slot name
-              containerRegistry: 'kk2467'  # Container registry URL (Docker Hub)
-              imageName: 'kk2467/python'  # Full Docker image name
+              containerRegistry: 'docker.io'  # Docker Hub registry
+              imageName: $(imageName):latest  # Full Docker image name
               isPush: true  # Push the Docker image to Azure App Service
