@@ -7,7 +7,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  imageName: 'mydockerusername/my-app'  # Use your Docker Hub or ACR image name.
+  imageName: 'kk2467/python'  # Use your Docker Hub or ACR image name.
   dockerRegistryServiceConnection: 'kk2467'  # Replace with your Docker registry connection name.
 
 stages:
