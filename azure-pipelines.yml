@@ -58,10 +58,5 @@ stages:
               imageName: $(imageName):latest
               isPush: true
 
-# Optionally, you can control how many jobs run in parallel under `jobs` or `stages`:
-# This limits jobs under a stage to run concurrently (max 1 job at a time).
-jobs:
-  - job: Build
-    displayName: 'Build Docker Image'
-    maxParallel: 1  # This limits the concurrency of jobs to 1
+
 
