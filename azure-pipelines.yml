@@ -21,7 +21,8 @@ stages:
       - job: Build
         displayName: 'Build Docker Image'
         steps:
-      
+          - task: Checkout@1
+            displayName: 'Checkout Code'
 
           - task: Docker@2
             displayName: 'Build Docker Image'
