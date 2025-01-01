@@ -4,30 +4,28 @@ trigger:
       - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use the default hosted Ubuntu agent pool (for free tier, one parallel job)
+  vmImage: 'ubuntu-latest'  # Use a Microsoft-hosted Ubuntu agent
 
 variables:
-  azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection
-  DefaultResourceGroup-CCAN: 'Demo2711'  # Azure App Service name
+  azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection name
+  appName: 'DemoApp'  # Azure App Service name
   resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group
-  slotName: 'production'  # Azure App Service slot name
-  imageName: 'kk2467/python:3.13'  # Docker image name in Docker Hub
+  slotName: 'production'  # Azure slot name
+  imageName: 'kk2467/python:3.13'  # Docker image name
 
 stages:
-  - stage: Deploy
-    displayName: 'Deploy Docker Image to Azure'
+  - stage: VerifyVariables
+    displayName: 'Verify Variables'
     jobs:
-      - job: Deploy
-        displayName: 'Deploy Docker Container'
+      - job: VerifyVariablesJob
+        displayName: 'Verify and Display Variables'
         steps:
-          # Step 1: Deploy Docker image to Azure App Service
-          - task: AzureWebAppContainer@1
-            displayName: 'Deploy Docker Image to Azure App Service'
-            inputs:
-              azureSubscription: $(azureSubscription)  # Use the service connection
-              appName: $(appName)  # Azure App Service name
-              resourceGroupName: $(resourceGroup)  # Azure resource group
-              slotName: $(slotName)  # Azure slot (e.g., 'production')
-              containerRegistry: 'docker.io'  # Docker Hub registry (or use ACR if applicable)
-              imageName: $(imageName)  # Docker image in Docker Hub
-              isPush: false  # We are not pushing the image; only deploying
+          - script: |
+              echo "Verifying all pipeline variables..."
+              echo "azureSubscription: $(azureSubscription)"
+              echo "appName: $(appName)"
+              echo "resourceGroup: $(resourceGroup)"
+              echo "slotName: $(slotName)"
+              echo "imageName: $(imageName)"
+            displayName: 'Display Variables for Debugging'
+
