@@ -10,7 +10,7 @@ variables:
   imageName: 'kk2467/python:3.13'
   dockerRegistryServiceConnection: 'kk2467'
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'
-  appName: 'Demo2711'
+  appName: 'my-app-cicd'
   resourceGroup: 'DefaultResourceGroup-CCAN'
   slotName: 'production'
 
