@@ -1,68 +1,33 @@
+
 trigger:
   branches:
     include:
-      - main  # Trigger the pipeline when changes are pushed to the main branch
+      - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use the latest Ubuntu image for the build agent
+  vmImage: 'ubuntu-latest'
 
 variables:
-  imageName: 'kk2467/python:3.13'  # Docker image to be used
-  dockerRegistryServiceConnection: 'kk2467'  # Docker registry service connection
-  azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure subscription service connection
+  azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Name of the Azure service connection
   appName: 'Demo2711'  # Azure App Service name
   resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group
-  slotName: 'production'  # Azure App Service slot name
-
+  slotName: 'production'  # Azure slot name
+  imageName: 'kk2467/python:3.13'  # Docker image name
 stages:
-  - stage: Build
-    displayName: 'Build and Dockerize'
-    jobs:
-      - job: Build
-        displayName: 'Build Docker Image'
-        steps:
-          - task: Checkout@1
-            displayName: 'Checkout Code'  # Checkout code from the repository
-
-          - task: Docker@2
-            displayName: 'Build Docker Image'
-            inputs:
-              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry connection
-              repository: $(imageName)  # Docker image repository
-              command: 'build'  # Docker build command
-              Dockerfile: $(Build.SourcesDirectory)/Dockerfile  # Path to Dockerfile
-              tags: 'latest'  # Tag the image as latest
-
-          - task: Docker@2
-            displayName: 'Push Docker Image'
-            inputs:
-              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry connection
-              repository: $(imageName)  # Docker image repository
-              command: 'push'  # Docker push command
-              tags: 'latest'  # Tag for the pushed image
-
   - stage: Deploy
-    displayName: 'Deploy to Azure App Service'
+    displayName: 'Deploy Docker Image to Azure'
     jobs:
       - job: Deploy
-        displayName: 'Deploy Docker Container to Azure App Service'
+        displayName: 'Deploy Docker Container'
         steps:
-          # Debugging step to print the variable values
-          - script: |
-              echo "appName: $(appName)"
-              echo "dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)"
-              echo "imageName: $(imageName)"
-              echo "resourceGroup: $(resourceGroup)"
-              echo "slotName: $(slotName)"
-            displayName: 'Display Variable Values for Debugging'
-
+          # Use AzureWebAppContainer task to deploy to Azure App Service
           - task: AzureWebAppContainer@1
-            displayName: 'Deploy Docker Image to Azure'
+            displayName: 'Deploy Docker Image to Azure App Service'
             inputs:
-              azureSubscription: $(azureSubscription)  # Azure subscription service connection
-              appName: $(appName)  # Azure App Service name
-              resourceGroupName: $(resourceGroup)  # Azure resource group
-              slotName: $(slotName)  # Azure App Service slot
-              containerRegistry: 'docker.io'  # Docker registry (assuming Docker Hub)
-              imageName: $(imageName):latest  # Docker image tag to be deployed
+              azureSubscription: $(azureSubscription)  # Use the service connection
+              appName: $(appName)
+              resourceGroupName: $(resourceGroup)
+              slotName: $(slotName)
+              containerRegistry: 'docker.io'  # Use Docker Hub or Azure Container Registry
+              imageName: $(imageName)
               isPush: true  # Push the image to Azure App Service
