@@ -11,47 +11,32 @@ variables:
   appName: 'Demo2711'  # Azure App Service name
   resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group
   slotName: 'production'  # Azure App Service slot name
-  imageName: 'kk2467/python:3.13'  # Docker image name
-  dockerRegistryServiceConnection: 'kk2467'
+  imageName: 'kk2467/python:3.13'  # Docker image name in Docker Hub
 
 stages:
-  - stage: BuildAndDeploy
-    displayName: 'Build Docker Image and Deploy to Azure'
+  - stage: Deploy
+    displayName: 'Deploy Docker Image to Azure'
     jobs:
-      - job: BuildAndDeploy
-        displayName: 'Build Docker Image and Deploy'
+      - job: Deploy
+        displayName: 'Deploy Docker Container'
         steps:
-          # Step 1: Checkout code
-          - task: Checkout@1
-            displayName: 'Checkout Code'
+          # Step 1: Display variables for debugging
+          - script: |
+              echo "appName: $(appName)"
+              echo "dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)"
+              echo "imageName: $(imageName)"
+              echo "resourceGroup: $(resourceGroup)"
+              echo "slotName: $(slotName)"
+            displayName: 'Display Variable Values for Debugging'
 
-          # Step 2: Build the Docker image
-          - task: Docker@2
-            displayName: 'Build Docker Image'
-            inputs:
-              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry connection
-              repository: $(imageName)  # Docker image repository
-              command: 'build'
-              Dockerfile: $(Build.SourcesDirectory)/Dockerfile  # Path to the Dockerfile in your repository
-              tags: 'latest'
-
-          # Step 3: Push the Docker image to Docker Hub (or Azure Container Registry)
-          - task: Docker@2
-            displayName: 'Push Docker Image'
-            inputs:
-              containerRegistry: $(dockerRegistryServiceConnection)  # Docker registry connection
-              repository: $(imageName)  # Docker image repository
-              command: 'push'
-              tags: 'latest'
-
-          # Step 4: Deploy Docker image to Azure App Service
+          # Step 2: Deploy Docker image to Azure App Service
           - task: AzureWebAppContainer@1
             displayName: 'Deploy Docker Image to Azure App Service'
             inputs:
-              azureSubscription: $(azureSubscription)  # Azure service connection
-              appName: $(appName)
-              resourceGroupName: $(resourceGroup)
-              slotName: $(slotName)
-              containerRegistry: 'docker.io'  # Docker Hub registry
-              imageName: $(imageName):latest  # The image to deploy (tagged as latest)
-              isPush: true  # Push the image to Azure App Service
+              azureSubscription: $(azureSubscription)  # Use the service connection
+              appName: $(appName)  # Azure App Service name
+              resourceGroupName: $(resourceGroup)  # Azure resource group
+              slotName: $(slotName)  # Azure slot (e.g., 'production')
+              containerRegistry: 'docker.io'  # Docker Hub registry (or use ACR if applicable)
+              imageName: $(imageName)  # Docker image in Docker Hub
+              isPush: false  # We are not pushing the image; only deploying
