@@ -8,7 +8,7 @@ pool:
 
 variables:
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection
-  appName: 'Demo2711'  # Azure App Service name
+  DefaultResourceGroup-CCAN: 'Demo2711'  # Azure App Service name
   resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group
   slotName: 'production'  # Azure App Service slot name
   imageName: 'kk2467/python:3.13'  # Docker image name in Docker Hub
