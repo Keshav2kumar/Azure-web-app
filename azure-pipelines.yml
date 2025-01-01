@@ -4,7 +4,7 @@ trigger:
       - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use a Microsoft-hosted Ubuntu agent
+  vmImage: 'ubuntu-latest'  # Use the default hosted Ubuntu agent pool
 
 variables:
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection name
@@ -14,12 +14,13 @@ variables:
   imageName: 'kk2467/python:3.13'  # Docker image name
 
 stages:
-  - stage: VerifyVariables
-    displayName: 'Verify Variables'
+  - stage: Deploy
+    displayName: 'Deploy Docker Image to Azure'
     jobs:
-      - job: VerifyVariablesJob
-        displayName: 'Verify and Display Variables'
+      - job: Deploy
+        displayName: 'Deploy Docker Container'
         steps:
+          # Verify and display all variables (for debugging purposes)
           - script: |
               echo "Verifying all pipeline variables..."
               echo "azureSubscription: $(azureSubscription)"
@@ -29,3 +30,14 @@ stages:
               echo "imageName: $(imageName)"
             displayName: 'Display Variables for Debugging'
 
+          # Use AzureWebAppContainer task to deploy to Azure App Service
+          - task: AzureWebAppContainer@1
+            displayName: 'Deploy Docker Image to Azure App Service'
+            inputs:
+              azureSubscription: $(azureSubscription)  # Azure service connection name
+              appName: $(appName)
+              resourceGroupName: $(resourceGroup)
+              slotName: $(slotName)
+              containerRegistry: 'docker.io'  # Docker Hub registry
+              imageName: $(imageName)  # Docker image to deploy
+              isPush: false  # No push to the registry, just deploying
