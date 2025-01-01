@@ -20,16 +20,6 @@ stages:
       - job: Deploy
         displayName: 'Deploy Docker Container'
         steps:
-          # Step 1: Display variables for debugging
-          - script: |
-              echo "appName: $(appName)"
-              echo "dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)"
-              echo "imageName: $(imageName)"
-              echo "resourceGroup: $(resourceGroup)"
-              echo "slotName: $(slotName)"
-            displayName: 'Display Variable Values for Debugging'
-
-          # Step 2: Deploy Docker image to Azure App Service
           - task: AzureWebAppContainer@1
             displayName: 'Deploy Docker Image to Azure App Service'
             inputs:
