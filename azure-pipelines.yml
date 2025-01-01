@@ -4,7 +4,7 @@ trigger:
       - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use the default hosted Ubuntu agent pool
+  vmImage: 'ubuntu-latest'  # Use the default hosted Ubuntu agent pool (for free tier, one parallel job)
 
 variables:
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection
@@ -12,7 +12,7 @@ variables:
   resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group
   slotName: 'production'  # Azure App Service slot name
   imageName: 'kk2467/python:3.13'  # Docker image name in Docker Hub
-  dockerRegistryServiceConnection: 'kk2467'
+
 stages:
   - stage: Deploy
     displayName: 'Deploy Docker Image to Azure'
@@ -20,13 +20,14 @@ stages:
       - job: Deploy
         displayName: 'Deploy Docker Container'
         steps:
-          # Step 1: Display variables for debugging
-          - script: |
-              echo "appName: $(appName)"
-              echo "dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)"
-              echo "imageName: $(imageName)"
-              echo "resourceGroup: $(resourceGroup)"
-              echo "slotName: $(slotName)"
-            displayName: 'Display Variable Values for Debugging'
-
-          
+          # Step 1: Deploy Docker image to Azure App Service
+          - task: AzureWebAppContainer@1
+            displayName: 'Deploy Docker Image to Azure App Service'
+            inputs:
+              azureSubscription: $(azureSubscription)  # Use the service connection
+              appName: $(appName)  # Azure App Service name
+              resourceGroupName: $(resourceGroup)  # Azure resource group
+              slotName: $(slotName)  # Azure slot (e.g., 'production')
+              containerRegistry: 'docker.io'  # Docker Hub registry (or use ACR if applicable)
+              imageName: $(imageName)  # Docker image in Docker Hub
+              isPush: false  # We are not pushing the image; only deploying
