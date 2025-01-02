@@ -11,10 +11,17 @@ variables:
   appName: 'DemoLTI'  # Azure App Service name.
   resourceGroup: 'DemoLTI_group'  # Azure Resource Group.
   azureRegion: 'Canada Central'  # Azure region (adjust based on your location).
+  githubRepository: 'Keshav2kumar/pipelines-javascript-docker'  # Your GitHub repository name.
+
+resources:
+  repositories:
+    - repository: githubRepo
+      type: github
+      name: $(githubRepository)  # Link the GitHub repository using the correct service connection.
 
 steps:
   # Step 1: Checkout code from GitHub
-  - checkout: https://github.com/Keshav2kumar/pipelines-javascript-docker.git  # Replace with your GitHub repo URL.
+  - checkout: githubRepo  # Checkout the code from GitHub using the configured repository resource.
 
   # Step 2: Build Docker Image
   - script: |
