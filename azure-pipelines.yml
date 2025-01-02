@@ -1,58 +1,35 @@
 trigger:
-  - main  # Triggers the pipeline when changes are made to the main branch.
+  branches:
+    include:
+      - main  # Adjust the branch if you want to trigger for a different branch
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use an Ubuntu-based agent for the pipeline.
+  vmImage: 'ubuntu-latest'  # You can use 'windows-latest' if you prefer to run on a Windows agent
 
 variables:
-  dockerImageName: 'my-app'  # Name of the Docker image.
-  dockerRegistryConnection: 'DemoLTIdocker'  # Docker Hub service connection in Azure DevOps.
-  azureSubscription: 'DemoLTI'  # Azure Service connection name.
-  appName: 'DemoLTI'  # Azure App Service name.
-  resourceGroup: 'DemoLTI_group'  # Azure Resource Group.
-  azureRegion: 'Canada Central'  # Azure region.
-  githubRepository: 'Keshav2kumar/pipelines-javascript-docker'  # GitHub repo name.
+  # Define any variables you'd like to use in the pipeline
+  buildConfiguration: 'Release'
 
 resources:
   repositories:
     - repository: githubRepo
       type: github
-      name: 'Keshav2kumar/pipelines-javascript-docker'  # GitHub username/repo
-      endpoint: 'github.com_DemoLTI'  # GitHub service connection.
+      name: 'Keshav2kumar/pipelines-javascript-docker'  # Replace with your GitHub username/repository
+      endpoint: 'github.com_DemoLTI'  # The service connection name for GitHub you created earlier
 
 steps:
   # Step 1: Checkout code from GitHub
-  - checkout: githubRepo  # Checkout the code from GitHub using the repository resource.
-
-  # Step 2: Build Docker Image
+  - checkout: githubRepo  # This step checks out the code from GitHub
+  
+  # Step 2: Install dependencies (if needed, e.g., for Node.js)
   - script: |
-      docker build -t $(dockerRegistryConnection).docker.io/$(dockerImageName):$(Build.BuildId) .
-    displayName: 'Build Docker Image'
+      echo Installing dependencies...
+      npm install  # Assuming it's a Node.js app, change if using other frameworks
+    displayName: 'Install Dependencies'
 
-  # Step 3: Log in to Docker Hub
-  - task: Docker@2
-    inputs:
-      containerRegistry: $(dockerRegistryConnection)  # Docker service connection for authentication.
-      command: 'login'
-    displayName: 'Login to Docker Hub'
+  # Step 3: Build the code (customize this to your technology stack)
+  - script: |
+      echo Building the code...
+      npm run build  # Change this to whatever build command your project needs
+    displayName: 'Build Code'
 
-  # Step 4: Push the Docker Image to Docker Hub
-  - task: Docker@2
-    inputs:
-      containerRegistry: $(dockerRegistryConnection)  # Docker service connection.
-      repository: $(dockerImageName)  # Docker image repository.
-      command: 'push'  # Push the image to Docker Hub.
-      tags: |
-        $(Build.BuildId)  # Image tag based on build ID.
-        latest  # Push 'latest' tag as well.
-    displayName: 'Push Docker Image to Docker Hub'
-
-  # Step 5: Deploy the Docker Image to Azure App Service
-  - task: AzureWebAppContainer@1
-    inputs:
-      azureSubscription: $(azureSubscription)  # Azure service connection.
-      appName: $(appName)  # Azure App Service name.
-      resourceGroupName: $(resourceGroup)  # Resource group.
-      imageName: $(dockerRegistryConnection).docker.io/$(dockerImageName):$(Build.BuildId)  # Docker image from Docker Hub.
-      tag: 'latest'  # Use the 'latest' tag for the image deployment.
-    displayName: 'Deploy Docker Image to Azure App Service'
