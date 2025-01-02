@@ -5,7 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  dockerImageName: 'azure-app'
+  dockerImageName: 'kk2467/python:3.13'
 
 steps:
   # Step 1: Checkout code
