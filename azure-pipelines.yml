@@ -4,7 +4,7 @@ trigger:
       - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu'  # Use the default hosted Ubuntu agent pool
+  vmImage: 'ubuntu-latest'  # Use the default hosted Ubuntu agent pool
 
 variables:
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection name
@@ -20,15 +20,6 @@ stages:
       - job: Deploy
         displayName: 'Deploy Docker Container'
         steps:
-          # Step 1: Verify and display all variables (for debugging purposes)
-          - script: |
-              echo "Verifying all pipeline variables..."
-              echo "azureSubscription: $(azureSubscription)"
-              echo "appName: $(appName)"
-              echo "resourceGroup: $(resourceGroup)"
-              echo "slotName: $(slotName)"
-              echo "imageName: $(imageName)"
-            displayName: 'Display Variables for Debugging'
 
           # Step 2: Deploy Docker image to Azure App Service
           - task: AzureWebAppContainer@1
