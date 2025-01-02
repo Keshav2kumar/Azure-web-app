@@ -4,7 +4,7 @@ trigger:
       - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu'  # Use the default hosted Ubuntu agent pool
+  vmImage: 'ubuntu-latest'  # Use the default hosted Ubuntu agent pool
 
 variables:
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection name
@@ -22,7 +22,7 @@ stages:
         steps:
           # Step 1: Checkout code
           - checkout: self
-            fetchDepth: 0  # Only fetch the latest commit
+            fetchDepth: 0  # Fetch the full history of commits (use 1 for shallow clone)
             displayName: 'Checkout code from repository'
 
           # Step 2: Verify and display all variables (for debugging purposes)
