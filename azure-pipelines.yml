@@ -13,7 +13,7 @@ steps:
 
   # Step 2: Build Docker Image
   - script: |
-      docker build -t $(dockerImageName):$(Build.BuildId) .
+      docker build -t $(dockerImageName):$(Build.BuildId) .C:\Users\hp\Azure demo\Azure-web-app\Azure-web-app 
     displayName: 'Build Docker Image'
 
   # Step 3: Push Docker Image to Azure App Service
