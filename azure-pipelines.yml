@@ -14,7 +14,7 @@ resources:
   repositories:
     - repository: githubRepo
       type: github
-      name: 'Keshav2kumar/pipelines-javascript-docker'  # Replace with your GitHub username/repository
+      name: 'Keshav2kumar / Azure-web-app'  # Replace with your GitHub username/repository
       endpoint: 'github.com_DemoLTI'  # The service connection name for GitHub you created earlier
 
 steps:
