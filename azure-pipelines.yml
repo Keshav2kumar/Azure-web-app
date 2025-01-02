@@ -10,17 +10,23 @@ variables:
 steps:
   # Step 1: Checkout code
   - task: Checkout@1
+    displayName: 'Checkout source code'
 
-  # Step 2: Build Docker Image
+  # Step 2: Display variables for debugging
   - script: |
-      docker build -t $(dockerImageName):$(Build.BuildId) .C:\Users\hp\Azure demo\Azure-web-app\Azure-web-app 
+      echo "dockerImageName: $(dockerImageName)"
+      echo "Build ID: $(Build.BuildId)"
+    displayName: 'Display Debugging Information'
+
+  # Step 3: Build Docker Image
+  - script: |
+      docker build -t $(dockerImageName):$(Build.BuildId) .
     displayName: 'Build Docker Image'
 
-  # Step 3: Push Docker Image to Azure App Service
+  # Step 4: Push Docker Image to Azure App Service
   - task: AzureWebAppContainer@1
     inputs:
-      azureSubscription: 'DemoLTI'
-      appName: 'DemoLTI'
-      imageName: '$(dockerImageName):$(Build.BuildId)'
+      azureSubscription: 'DemoLTI'  # Make sure the service connection exists and is correct
+      appName: 'DemoLTI'  # App Service Name
+      imageName: '$(dockerImageName):$(Build.BuildId)'  # Docker image name with Build ID tag
       tag: 'latest'
-
