@@ -6,8 +6,8 @@ pool:
 
 variables:
   dockerImageName: 'my-app'  # Name of the Docker image.
-  dockerRegistryConnection: ''  # Name of the Docker Hub service connection in Azure DevOps.
-  azureSubscription: 'Free Trial (4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure Service connection name.
+  dockerRegistryConnection: 'DemoLTIdocker'  # Name of the Docker Hub service connection in Azure DevOps.
+  azureSubscription: 'DemoLTI'  # Azure Service connection name.
   appName: 'DemoLTI'  # Azure App Service name.
   resourceGroup: 'DemoLTI_group'  # Azure Resource Group.
   azureRegion: 'Canada Central'  # Azure region (adjust based on your location).
