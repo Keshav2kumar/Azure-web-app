@@ -4,7 +4,7 @@ trigger:
       - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu'  # Use the default hosted Ubuntu agent pool
+  vmImage: 'ubuntu-latest'  # Use the default hosted Ubuntu agent pool
 
 variables:
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection name
@@ -12,6 +12,13 @@ variables:
   resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group
   slotName: 'production'  # Azure slot name
   imageName: 'docker.io/kk2467/python:3.13'  # Docker image name (already built)
+
+# Explicitly disable repository checkout (this part was causing the error)
+resources:
+  repositories:
+    - repository: self
+      type: git
+      name: none
 
 stages:
   - stage: Deploy
