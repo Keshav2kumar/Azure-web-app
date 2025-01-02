@@ -4,7 +4,7 @@ trigger:
       - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu-latest'  # Choose the desired image for your pipeline
+  vmImage: 'ubuntu-22.04'  # Use the desired VM image
 
 variables:
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection name
@@ -13,9 +13,9 @@ variables:
   slotName: 'production'  # Azure slot name
   imageName: 'kk2467/python:3.13'  # Docker image name (already built)
 
-# No repository configuration needed
+# Explicitly prevent repository checkout
 steps:
-  - checkout: none  # Explicitly prevent repository checkout
+  - checkout: none  # Prevent repository checkout
 
   - script: |
       echo "Verifying all pipeline variables..."
