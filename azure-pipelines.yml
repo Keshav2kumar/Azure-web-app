@@ -4,47 +4,41 @@ trigger:
       - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use the default hosted Ubuntu agent pool
+  vmImage: 'ubuntu-22.04'  # Use the default hosted Ubuntu agent pool
 
 variables:
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection name
   appName: 'Demo2711'  # Azure App Service name
   resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group
   slotName: 'production'  # Azure slot name
-  imageName: 'docker.io/kk2467/python:3.13'  # Docker image name (already built)
+  imageName: 'kk2467/python:3.13'  # Docker image name (already built)
 
-# Explicitly disable repository checkout (this part was causing the error)
-resources:
-  repositories:
-    - repository: self
-      type: git
-      name: none
+# No repositories needed, so we remove resources entirely
+# resources:
+#   repositories:
+#     - repository: self
+#       type: git
+#       name: none
 
-stages:
-  - stage: Deploy
-    displayName: 'Deploy Docker Image to Azure'
-    jobs:
-      - job: Deploy
-        displayName: 'Deploy Docker Container'
-        steps:
-          # Step 1: Verify and display all variables (for debugging purposes)
-          - script: |
-              echo "Verifying all pipeline variables..."
-              echo "azureSubscription: $(azureSubscription)"
-              echo "appName: $(appName)"
-              echo "resourceGroup: $(resourceGroup)"
-              echo "slotName: $(slotName)"
-              echo "imageName: $(imageName)"
-            displayName: 'Display Variables for Debugging'
+steps:
+  - checkout: none  # Explicitly prevent repository checkout
 
-          # Step 2: Deploy Docker image to Azure App Service
-          - task: AzureWebAppContainer@1
-            displayName: 'Deploy Docker Image to Azure App Service'
-            inputs:
-              azureSubscription: $(azureSubscription)  # Azure service connection name
-              appName: $(appName)
-              resourceGroupName: $(resourceGroup)
-              slotName: $(slotName)
-              containerRegistry: 'docker.io'  # Docker Hub registry
-              imageName: $(imageName)  # Docker image to deploy
-              isPush: false  # No push to the registry, just deploying
+  - script: |
+      echo "Verifying all pipeline variables..."
+      echo "azureSubscription: $(azureSubscription)"
+      echo "appName: $(appName)"
+      echo "resourceGroup: $(resourceGroup)"
+      echo "slotName: $(slotName)"
+      echo "imageName: $(imageName)"
+    displayName: 'Display Variables for Debugging'
+
+  - task: AzureWebAppContainer@1
+    displayName: 'Deploy Docker Image to Azure App Service'
+    inputs:
+      azureSubscription: $(azureSubscription)  # Azure service connection name
+      appName: $(appName)
+      resourceGroupName: $(resourceGroup)
+      slotName: $(slotName)
+      containerRegistry: 'docker.io'  # Docker Hub registry
+      imageName: $(imageName)  # Docker image to deploy
+      isPush: false  # No push to the registry, just deploying
