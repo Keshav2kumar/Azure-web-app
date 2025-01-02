@@ -4,7 +4,7 @@ trigger:
       - main  # Trigger pipeline when changes are made to the main branch
 
 pool:
-  vmImage: 'ubuntu-22.04'  # Use the default hosted Ubuntu agent pool
+  vmImage: 'ubuntu-latest'  # Choose the desired image for your pipeline
 
 variables:
   azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection name
@@ -13,13 +13,7 @@ variables:
   slotName: 'production'  # Azure slot name
   imageName: 'kk2467/python:3.13'  # Docker image name (already built)
 
-# No repositories needed, so we remove resources entirely
-# resources:
-#   repositories:
-#     - repository: self
-#       type: git
-#       name: none
-
+# No repository configuration needed
 steps:
   - checkout: none  # Explicitly prevent repository checkout
 
@@ -32,6 +26,7 @@ steps:
       echo "imageName: $(imageName)"
     displayName: 'Display Variables for Debugging'
 
+  # Deploy Docker image to Azure App Service
   - task: AzureWebAppContainer@1
     displayName: 'Deploy Docker Image to Azure App Service'
     inputs:
