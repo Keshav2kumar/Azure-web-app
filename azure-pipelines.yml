@@ -14,7 +14,7 @@ variables:
 
 steps:
   # Step 1: Checkout code from GitHub
-  - checkout: gh repo clone Keshav2kumar/pipelines-javascript-docker  # Replace with your GitHub repo URL.
+  - checkout: https://github.com/Keshav2kumar/pipelines-javascript-docker.git  # Replace with your GitHub repo URL.
 
   # Step 2: Build Docker Image
   - script: |
