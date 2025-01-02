@@ -15,9 +15,10 @@ variables:
 
 resources:
   repositories:
-    - repository: pipelines-javascript-docker 
+    - repository: githubRepo
       type: github
-      name: $(github.com_Keshav2kumar)  # Link the GitHub repository using the correct service connection.
+      name: 'Keshav2kumar/pipelines-javascript-docker'  # Replace with your actual GitHub username and repo name
+      endpoint: 'github.com_DemoLTI'  # Ensure this matches the name of your service connection
 
 steps:
   # Step 1: Checkout code from GitHub
