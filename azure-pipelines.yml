@@ -22,7 +22,7 @@ stages:
         steps:
           # Step 1: Checkout code
           - checkout: self
-            fetchDepth: 1  # Only fetch the latest commit
+            fetchDepth: 0  # Only fetch the latest commit
             displayName: 'Checkout code from repository'
 
           # Step 2: Verify and display all variables (for debugging purposes)
