@@ -17,14 +17,7 @@ variables:
 steps:
   - checkout: none  # Prevent repository checkout
 
-  - script: |
-      echo "Verifying all pipeline variables..."
-      echo "azureSubscription: $(azureSubscription)"
-      echo "appName: $(appName)"
-      echo "resourceGroup: $(resourceGroup)"
-      echo "slotName: $(slotName)"
-      echo "imageName: $(imageName)"
-    displayName: 'Display Variables for Debugging'
+
 
   # Deploy Docker image to Azure App Service
   - task: AzureWebAppContainer@1
