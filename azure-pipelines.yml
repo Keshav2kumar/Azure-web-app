@@ -15,9 +15,9 @@ variables:
 
 resources:
   repositories:
-    - repository: githubRepo
+    - repository: pipelines-javascript-docker 
       type: github
-      name: $(githubRepository)  # Link the GitHub repository using the correct service connection.
+      name: $(github.com_Keshav2kumar)  # Link the GitHub repository using the correct service connection.
 
 steps:
   # Step 1: Checkout code from GitHub
