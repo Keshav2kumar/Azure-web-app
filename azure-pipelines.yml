@@ -1,28 +1,28 @@
 trigger:
-  - main  # Triggers the pipeline when changes are made to the main branch of the GitHub repository.
+  - main  # Triggers the pipeline when changes are made to the main branch.
 
 pool:
   vmImage: 'ubuntu-latest'  # Use an Ubuntu-based agent for the pipeline.
 
 variables:
   dockerImageName: 'my-app'  # Name of the Docker image.
-  dockerRegistryConnection: 'DemoLTIdocker'  # Name of the Docker Hub service connection in Azure DevOps.
+  dockerRegistryConnection: 'DemoLTIdocker'  # Docker Hub service connection in Azure DevOps.
   azureSubscription: 'DemoLTI'  # Azure Service connection name.
   appName: 'DemoLTI'  # Azure App Service name.
   resourceGroup: 'DemoLTI_group'  # Azure Resource Group.
-  azureRegion: 'Canada Central'  # Azure region (adjust based on your location).
-  githubRepository: 'Keshav2kumar/pipelines-javascript-docker'  # Your GitHub repository name.
+  azureRegion: 'Canada Central'  # Azure region.
+  githubRepository: 'Keshav2kumar/pipelines-javascript-docker'  # GitHub repo name.
 
 resources:
   repositories:
     - repository: githubRepo
       type: github
-      name: 'Keshav2kumar/pipelines-javascript-docker'  # Replace with your actual GitHub username and repo name
-      endpoint: 'github.com_DemoLTI'  # Ensure this matches the name of your service connection
+      name: 'Keshav2kumar/pipelines-javascript-docker'  # GitHub username/repo
+      endpoint: 'github.com_DemoLTI'  # GitHub service connection.
 
 steps:
   # Step 1: Checkout code from GitHub
-  - checkout: githubRepo  # Checkout the code from GitHub using the configured repository resource.
+  - checkout: githubRepo  # Checkout the code from GitHub using the repository resource.
 
   # Step 2: Build Docker Image
   - script: |
@@ -32,19 +32,19 @@ steps:
   # Step 3: Log in to Docker Hub
   - task: Docker@2
     inputs:
-      containerRegistry: $(dockerRegistryConnection)  # Use the Docker service connection you created.
+      containerRegistry: $(dockerRegistryConnection)  # Docker service connection for authentication.
       command: 'login'
-      displayName: 'Login to Docker Hub'
+    displayName: 'Login to Docker Hub'
 
   # Step 4: Push the Docker Image to Docker Hub
   - task: Docker@2
     inputs:
-      containerRegistry: $(dockerRegistryConnection)
-      repository: $(dockerImageName)
-      command: 'push'
+      containerRegistry: $(dockerRegistryConnection)  # Docker service connection.
+      repository: $(dockerImageName)  # Docker image repository.
+      command: 'push'  # Push the image to Docker Hub.
       tags: |
-        $(Build.BuildId)
-        latest
+        $(Build.BuildId)  # Image tag based on build ID.
+        latest  # Push 'latest' tag as well.
     displayName: 'Push Docker Image to Docker Hub'
 
   # Step 5: Deploy the Docker Image to Azure App Service
@@ -52,7 +52,7 @@ steps:
     inputs:
       azureSubscription: $(azureSubscription)  # Azure service connection.
       appName: $(appName)  # Azure App Service name.
-      resourceGroupName: $(resourceGroup)  # Azure resource group.
+      resourceGroupName: $(resourceGroup)  # Resource group.
       imageName: $(dockerRegistryConnection).docker.io/$(dockerImageName):$(Build.BuildId)  # Docker image from Docker Hub.
       tag: 'latest'  # Use the 'latest' tag for the image deployment.
     displayName: 'Deploy Docker Image to Azure App Service'
