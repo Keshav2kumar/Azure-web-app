@@ -19,8 +19,8 @@ steps:
   # Step 3: Push Docker Image to Azure App Service
   - task: AzureWebAppContainer@1
     inputs:
-      azureSubscription: '<Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)>'
-      appName: '<DemoLTI>'
+      azureSubscription: 'DemoLTI'
+      appName: 'DemoLTI'
       imageName: '$(dockerImageName):$(Build.BuildId)'
       tag: 'latest'
 
