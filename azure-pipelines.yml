@@ -1,32 +1,46 @@
 trigger:
   branches:
     include:
-      - main  # Trigger pipeline when changes are made to the main branch
+      - main
 
 pool:
-  vmImage: 'ubuntu-22.04'  # Use the desired VM image
+  vmImage: 'ubuntu-latest'  # Use an Azure-hosted agent
 
-variables:
-  azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'  # Azure service connection name
-  appName: 'DemoLTI'  # Azure App Service name
-  resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group
-  slotName: 'production'  # Azure slot name
-  imageName: 'kk2467/python:3.13'  # Docker image name (already built)
-
-# Explicitly prevent repository checkout
 steps:
-  - checkout: none  # Prevent repository checkout
+  # Step 1: Install Docker (if needed)
+  - script: |
+      echo "Installing Docker..."
+      sudo apt-get update
+      sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      sudo apt-get update
+      sudo apt-get install -y docker-ce
+    displayName: 'Install Docker'
 
+  # Step 2: Verify Docker installation
+  - script: |
+      docker --version
+    displayName: 'Check Docker Version'
 
+  # Step 3: Build Docker Image
+  - script: |
+      docker build -t myimage .
+    displayName: 'Build Docker Image'
 
-  # Deploy Docker image to Azure App Service
+  # Step 4: Push Docker Image to Docker Hub (optional)
+  - script: |
+      docker login -u $(DOCKER_kk2467) -p $(DOCKER_Keshav@12)
+      docker push myimage
+    displayName: 'Push Docker Image to Docker Hub'
+
+  # Step 5: Deploy to Azure App Service
   - task: AzureWebAppContainer@1
     displayName: 'Deploy Docker Image to Azure App Service'
     inputs:
-      azureSubscription: $(azureSubscription)  # Azure service connection name
-      appName: $(appName)
-      resourceGroupName: $(resourceGroup)
-      slotName: $(slotName)
-      containerRegistry: 'docker.io'  # Docker Hub registry
-      imageName: $(imageName)  # Docker image to deploy
-      isPush: false  # No push to the registry, just deploying
+      azureSubscription: 'Free Trial(4680f1aa-5b51-443e-b72c-8b0326165036)'
+      appName: 'DemoLTI'
+      resourceGroupName: 'DefaultResourceGroup-CCAN'
+      imageName: 'docker.io/myimage:latest'
+      containerRegistry: 'docker.io'
+      isPush: false
