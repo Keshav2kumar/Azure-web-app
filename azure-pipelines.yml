@@ -5,7 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  dockerImageName: 'kk2467/python:3.13'
+  dockerImageName: 'node:12.18.1'
 
 steps:
   # Step 1: Checkout code
