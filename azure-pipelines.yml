@@ -11,7 +11,7 @@ variables:
   appName: 'DemoApp'  # Azure App Service name
   resourceGroup: 'DefaultResourceGroup-CCAN'  # Azure resource group
   slotName: 'production'  # Azure slot name
-  imageName: 'docker.io/kk2467/python:3.13'  # Docker image name
+  imageName: 'docker.io/kk2467/python:3.13'  # Docker image name (already built)
 
 stages:
   - stage: Deploy
@@ -20,12 +20,7 @@ stages:
       - job: Deploy
         displayName: 'Deploy Docker Container'
         steps:
-          # Step 1: Checkout code
-          - checkout: self
-            fetchDepth: 0  # Fetch the full history of commits (use 1 for shallow clone)
-            displayName: 'Checkout code from repository'
-
-          # Step 2: Verify and display all variables (for debugging purposes)
+          # Step 1: Verify and display all variables (for debugging purposes)
           - script: |
               echo "Verifying all pipeline variables..."
               echo "azureSubscription: $(azureSubscription)"
@@ -35,7 +30,7 @@ stages:
               echo "imageName: $(imageName)"
             displayName: 'Display Variables for Debugging'
 
-          # Step 3: Deploy Docker image to Azure App Service
+          # Step 2: Deploy Docker image to Azure App Service
           - task: AzureWebAppContainer@1
             displayName: 'Deploy Docker Image to Azure App Service'
             inputs:
